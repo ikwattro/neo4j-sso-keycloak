@@ -62,7 +62,7 @@ services:
             - KEYCLOAK_USER=admin
             - KEYCLOAK_PASSWORD=admin123
             - KEYCLOAK_AVAILABILITYCHECK_ENABLED=true
-            - KEYCLOAK_AVAILABILITYCHECK_TIMEOUT=15s
+            - KEYCLOAK_AVAILABILITYCHECK_TIMEOUT=25s
             - IMPORT_PATH=/config
         volumes:
             - ./resources/keycloak-config:/config
