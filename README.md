@@ -40,7 +40,11 @@ tail the logs until you see it's ready
 docker-compose logs -f keycloak
 ```
 
-You should see a line mentioning `application started`
+You should see a line ressembling to the following
+
+```
+Keycloak 10.0.2 (WildFly Core 11.1.1.Final) started in 18470ms
+```
 
 ### Launch Neo4j
 

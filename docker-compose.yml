@@ -14,17 +14,17 @@ services:
             - NEO4J_dbms_security_authorization__providers=oidc-keycloak,native
             - NEO4J_dbms_security_oidc_keycloak_display__name=Keycloak
             - NEO4J_dbms_security_oidc_keycloak_.auth__flow=pkce
-            - NEO4J_dbms_security_oidc_keycloak_well__known__discovery__uri=http://keycloak:8080/auth/realms/hume/.well-known/openid-configuration
-            - NEO4J_dbms_security_oidc_keycloak_auth__endpoint=http://127.0.0.1:8180/auth/realms/hume/protocol/openid-connect/auth
-            - NEO4J_dbms_security_oidc_keycloak_token__endpoint=http://127.0.0.1:8180/auth/realms/hume/protocol/openid-connect/token
+            - NEO4J_dbms_security_oidc_keycloak_well__known__discovery__uri=http://keycloak:8080/auth/realms/my-realm/.well-known/openid-configuration
+            - NEO4J_dbms_security_oidc_keycloak_auth__endpoint=http://127.0.0.1:8180/auth/realms/my-realm/protocol/openid-connect/auth
+            - NEO4J_dbms_security_oidc_keycloak_token__endpoint=http://127.0.0.1:8180/auth/realms/my-realm/protocol/openid-connect/token
             - NEO4J_dbms_security_oidc_keycloak_params=client_id=neo4j-sso;response_type=code;scope=openid email roles
             - NEO4J_dbms_security_oidc_keycloak_audience=account
-            - NEO4J_dbms_security_oidc_keycloak_issuer=http://127.0.0.1:8180/auth/realms/hume
+            - NEO4J_dbms_security_oidc_keycloak_issuer=http://127.0.0.1:8180/auth/realms/my-realm
             - NEO4J_dbms_security_oidc_keycloak_client__id=neo4j-sso
             - NEO4J_dbms_security_oidc_keycloak_claims_username=preferred_username
             - NEO4J_dbms_security_oidc_keycloak_claims_groups=roles
         volumes:
-            - "hume_neo4j_data:/data"
+            - "neo4j_data:/data"
         profiles:
             - neo4j
     neo4j-config-cli:
@@ -40,8 +40,6 @@ services:
             - neo4j
     postgres_keycloak:
         image: docker.graphaware.com/mirror/postgres:12.0
-        volumes:
-            - "hume_keycloak_data:/var/lib/postgresql/data"
         environment:
             POSTGRES_DB: keycloak
             POSTGRES_USER: keycloak
@@ -52,6 +50,8 @@ services:
         profiles:
             - keycloak
             - all
+        volumes:
+            - "keycloak_data:/var/lib/postgresql/data"
     keycloak:
         image: quay.io/keycloak/keycloak:10.0.2
         environment:
@@ -65,8 +65,6 @@ services:
             - KEYCLOAK_USER=admin
             - KEYCLOAK_PASSWORD=admin123
             - PROXY_ADDRESS_FORWARDING=true
-        # Enable Script Upload necessary for the import of neo4j-sso grants
-        command: -Dkeycloak.profile.feature.upload_scripts=enabled
         ports:
             - "8180:8080"
         depends_on: 
@@ -96,6 +94,6 @@ services:
             - keycloak
             - all
 volumes:
-    hume_keycloak_data:
-    hume_neo4j_data:
+    keycloak_data:
+    neo4j_data:
       
