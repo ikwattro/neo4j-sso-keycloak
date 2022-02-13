@@ -4,11 +4,11 @@ Uses Neo4j's own SSO capabilities.
 
 ## How-to Run
 
-This repository contains a fuly pre-configured setup with Docker
+This repository contains a fuly pre-configured setup with Docker :
 
-Neo4j running on localhost:7474
-Keycloak running on localhost:8180
-Keycloak Realm and client for Neo4j pre-configured
+- Neo4j running on localhost:7474
+- Keycloak running on localhost:8180
+- Keycloak Realm and client for Neo4j pre-configured
 
 ### Launch Keycloak
 
