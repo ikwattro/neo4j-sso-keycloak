@@ -1,10 +1,10 @@
 {
     "enabled": true,
-    "realm": "hume",
+    "realm": "my-realm",
     "users": [
         {
             "username": "admin",
-            "email": "admin@hume.ga",
+            "email": "christophe.willemsen@example.com",
             "enabled": true,
             "credentials": [
               {
@@ -13,18 +13,14 @@
               }
             ],
             "clientRoles": {
-                "hume-web": [
-                    "ROLE_USER",
-                    "ROLE_ADMINISTRATOR"
-                ],
                 "neo4j-sso": [
-                    "ADMIN"
+                    "admin"
                 ]
             }
         },
         {
             "username": "analyst",
-            "email": "analyst@hume.ga",
+            "email": "analyst@example.com",
             "enabled": true,
             "credentials": [
               {
@@ -33,11 +29,8 @@
               }
             ],
             "clientRoles": {
-                "hume-web": [
-                    "ROLE_USER"
-                ],
                 "neo4j-sso": [
-                    "ANALYST"
+                    "analyst"
                 ]
             }
         }
@@ -45,32 +38,16 @@
     "roles": {
         "realm": [],
         "client": {
-            "hume-web": [
-                {
-                    "name": "ROLE_USER",
-                    "description": "user role",
-                    "composite": false,
-                    "clientRole": true,
-                    "attributes": {}
-                },
-                {
-                    "name": "ROLE_ADMINISTRATOR",
-                    "description": "administrator role",
-                    "composite": false,
-                    "clientRole": true,
-                    "attributes": {}
-                }
-            ],
             "neo4j-sso": [
                 {
-                    "name": "ADMIN",
+                    "name": "admin",
                     "description": "neo4j admin role",
                     "composite": false,
                     "clientRole": true,
                     "attributes": {}
                 },
                 {
-                    "name": "ANALYST",
+                    "name": "analyst",
                     "description": "neo4j analyst role",
                     "composite": false,
                     "clientRole": true,
@@ -80,28 +57,6 @@
         }
     },
     "clients": [
-        {
-            "clientId": "hume-web",
-            "name": "hume-web",
-            "description": "Hume Web public client",
-            "enabled": true,
-            "publicClient": true,
-            "consentRequired": false,
-            "standardFlowEnabled": true,
-            "implicitFlowEnabled": true,
-            "directAccessGrantsEnabled": true,
-            "serviceAccountsEnabled": false,
-            "frontchannelLogout": false,
-            "protocol": "openid-connect",
-            "clientAuthenticatorType": "client-secret",
-            "secret": "q3sjAeJAyLzP3W4v",
-            "redirectUris": [
-                "*"
-            ],
-            "webOrigins": [
-                "*"
-            ]
-        },
         {
             "clientId": "neo4j-sso",
             "surrogateAuthRequired": false,
