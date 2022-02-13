@@ -1,0 +1,199 @@
+{
+    "enabled": true,
+    "realm": "hume",
+    "users": [
+        {
+            "username": "admin",
+            "email": "admin@hume.ga",
+            "enabled": true,
+            "credentials": [
+              {
+                "type": "password",
+                "value": "password"
+              }
+            ],
+            "clientRoles": {
+                "hume-web": [
+                    "ROLE_USER",
+                    "ROLE_ADMINISTRATOR"
+                ],
+                "neo4j-sso": [
+                    "ADMIN"
+                ]
+            }
+        },
+        {
+            "username": "analyst",
+            "email": "analyst@hume.ga",
+            "enabled": true,
+            "credentials": [
+              {
+                "type": "password",
+                "value": "password"
+              }
+            ],
+            "clientRoles": {
+                "hume-web": [
+                    "ROLE_USER"
+                ],
+                "neo4j-sso": [
+                    "ANALYST"
+                ]
+            }
+        }
+    ],
+    "roles": {
+        "realm": [],
+        "client": {
+            "hume-web": [
+                {
+                    "name": "ROLE_USER",
+                    "description": "user role",
+                    "composite": false,
+                    "clientRole": true,
+                    "attributes": {}
+                },
+                {
+                    "name": "ROLE_ADMINISTRATOR",
+                    "description": "administrator role",
+                    "composite": false,
+                    "clientRole": true,
+                    "attributes": {}
+                }
+            ],
+            "neo4j-sso": [
+                {
+                    "name": "ADMIN",
+                    "description": "neo4j admin role",
+                    "composite": false,
+                    "clientRole": true,
+                    "attributes": {}
+                },
+                {
+                    "name": "ANALYST",
+                    "description": "neo4j analyst role",
+                    "composite": false,
+                    "clientRole": true,
+                    "attributes": {}
+                }
+            ]
+        }
+    },
+    "clients": [
+        {
+            "clientId": "hume-web",
+            "name": "hume-web",
+            "description": "Hume Web public client",
+            "enabled": true,
+            "publicClient": true,
+            "consentRequired": false,
+            "standardFlowEnabled": true,
+            "implicitFlowEnabled": true,
+            "directAccessGrantsEnabled": true,
+            "serviceAccountsEnabled": false,
+            "frontchannelLogout": false,
+            "protocol": "openid-connect",
+            "clientAuthenticatorType": "client-secret",
+            "secret": "q3sjAeJAyLzP3W4v",
+            "redirectUris": [
+                "*"
+            ],
+            "webOrigins": [
+                "*"
+            ]
+        },
+        {
+            "clientId": "neo4j-sso",
+            "surrogateAuthRequired": false,
+            "enabled": true,
+            "alwaysDisplayInConsole": false,
+            "clientAuthenticatorType": "client-secret",
+            "redirectUris": [
+              "*"
+            ],
+            "webOrigins": [
+              "*"
+            ],
+            "notBefore": 0,
+            "bearerOnly": false,
+            "consentRequired": false,
+            "standardFlowEnabled": true,
+            "implicitFlowEnabled": true,
+            "directAccessGrantsEnabled": true,
+            "serviceAccountsEnabled": false,
+            "publicClient": true,
+            "frontchannelLogout": false,
+            "protocol": "openid-connect",
+            "attributes": {
+              "saml.assertion.signature": "false",
+              "id.token.as.detached.signature": "false",
+              "saml.multivalued.roles": "false",
+              "saml.force.post.binding": "false",
+              "saml.encrypt": "false",
+              "oauth2.device.authorization.grant.enabled": "true",
+              "backchannel.logout.revoke.offline.tokens": "false",
+              "saml.server.signature": "false",
+              "saml.server.signature.keyinfo.ext": "false",
+              "use.refresh.tokens": "true",
+              "exclude.session.state.from.auth.response": "false",
+              "oidc.ciba.grant.enabled": "false",
+              "saml.artifact.binding": "false",
+              "backchannel.logout.session.required": "true",
+              "client_credentials.use_refresh_token": "false",
+              "saml_force_name_id_format": "false",
+              "saml.client.signature": "false",
+              "tls.client.certificate.bound.access.tokens": "false",
+              "require.pushed.authorization.requests": "false",
+              "saml.authnstatement": "false",
+              "display.on.consent.screen": "false",
+              "saml.onetimeuse.condition": "false"
+            },
+            "authenticationFlowBindingOverrides": {},
+            "fullScopeAllowed": true,
+            "nodeReRegistrationTimeout": -1,
+            "protocolMappers": [
+              {
+                "name": "client-roles-to-roles-claim",
+                "protocol": "openid-connect",
+                "protocolMapper": "oidc-usermodel-client-role-mapper",
+                "consentRequired": false,
+                "config": {
+                  "multivalued": "true",
+                  "userinfo.token.claim": "true",
+                  "id.token.claim": "true",
+                  "access.token.claim": "true",
+                  "claim.name": "roles",
+                  "jsonType.label": "String",
+                  "usermodel.clientRoleMapping.clientId": "neo4j-sso"
+                }
+              },
+              {
+                "name": "username",
+                "protocol": "openid-connect",
+                "protocolMapper": "oidc-usermodel-property-mapper",
+                "consentRequired": false,
+                "config": {
+                  "userinfo.token.claim": "true",
+                  "user.attribute": "username",
+                  "id.token.claim": "true",
+                  "access.token.claim": "true",
+                  "claim.name": "email",
+                  "jsonType.label": "String"
+                }
+              }
+            ],
+            "defaultClientScopes": [
+              "web-origins",
+              "roles",
+              "profile",
+              "email"
+            ],
+            "optionalClientScopes": [
+              "address",
+              "phone",
+              "offline_access",
+              "microprofile-jwt"
+            ]
+          }
+    ]
+}

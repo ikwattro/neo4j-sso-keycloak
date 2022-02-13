@@ -1,0 +1,102 @@
+version: '3.7'
+services:
+    neo4j:
+        image: neo4j:${NEO4J_VERSION}
+        ports:
+            - "${NEO4J_HTTP_PORT:-7474}:7474"
+            - "${NEO4J_BOLT_PORT:-7687}:7687"
+        environment:
+            - NEO4J_ACCEPT_LICENSE_AGREEMENT=yes
+            - NEO4J_AUTH=neo4j/${NEO4J_PASSWORD:-password}
+            - NEO4J_dbms_connector_bolt_advertised__address=0.0.0.0:7687
+            - NEO4J_apoc_trigger_enabled=true
+            - NEO4J_dbms_security_authentication__providers=oidc-keycloak,native
+            - NEO4J_dbms_security_authorization__providers=oidc-keycloak,native
+            - NEO4J_dbms_security_oidc_keycloak_display__name=Keycloak
+            - NEO4J_dbms_security_oidc_keycloak_.auth__flow=pkce
+            - NEO4J_dbms_security_oidc_keycloak_well__known__discovery__uri=http://keycloak:8080/auth/realms/hume/.well-known/openid-configuration
+            - NEO4J_dbms_security_oidc_keycloak_auth__endpoint=http://127.0.0.1:8180/auth/realms/hume/protocol/openid-connect/auth
+            - NEO4J_dbms_security_oidc_keycloak_token__endpoint=http://127.0.0.1:8180/auth/realms/hume/protocol/openid-connect/token
+            - NEO4J_dbms_security_oidc_keycloak_params=client_id=neo4j-sso;response_type=code;scope=openid email roles
+            - NEO4J_dbms_security_oidc_keycloak_audience=account
+            - NEO4J_dbms_security_oidc_keycloak_issuer=http://127.0.0.1:8180/auth/realms/hume
+            - NEO4J_dbms_security_oidc_keycloak_client__id=neo4j-sso
+            - NEO4J_dbms_security_oidc_keycloak_claims_username=preferred_username
+            - NEO4J_dbms_security_oidc_keycloak_claims_groups=roles
+            - NEO4J_browser_allow__outgoing__connections=false
+        volumes:
+            - "hume_neo4j_data:/data"
+        profiles:
+            - neo4j
+    neo4j-config-cli:
+        image: graphaware/neo4j-config-cli:1.3.0
+        environment:
+            - NEO4J_USER=neo4j
+            - NEO4J_PASSWORD=password
+            - NEO4J_URI=bolt://neo4j:7687
+            - IMPORT_PATH=/config
+        volumes:
+            - "./resources/neo4j-config:/config"
+        profiles:
+            - neo4j
+    postgres_keycloak:
+        image: docker.graphaware.com/mirror/postgres:12.0
+        volumes:
+            - "hume_keycloak_data:/var/lib/postgresql/data"
+        environment:
+            POSTGRES_DB: keycloak
+            POSTGRES_USER: keycloak
+            POSTGRES_PASSWORD: password
+        command: -p 5433
+        expose:
+            - "5433" # Publishes 5433 to other containers but NOT to host machine
+        profiles:
+            - keycloak
+            - all
+    keycloak:
+        image: quay.io/keycloak/keycloak:10.0.2
+        environment:
+            - DB_VENDOR=POSTGRES
+            - DB_ADDR=postgres_keycloak
+            - DB_PORT=5433
+            - DB_DATABASE=keycloak
+            - DB_USER=keycloak
+            - DB_SCHEMA=public
+            - DB_PASSWORD=password
+            - KEYCLOAK_USER=admin
+            - KEYCLOAK_PASSWORD=admin123
+            - PROXY_ADDRESS_FORWARDING=true
+        # Enable Script Upload necessary for the import of neo4j-sso grants
+        command: -Dkeycloak.profile.feature.upload_scripts=enabled
+        ports:
+            - "8180:8080"
+        depends_on: 
+            - postgres_keycloak
+        restart: always
+        profiles:
+            - all
+            - keycloak
+    keycloak-config:
+        image: adorsys/keycloak-config-cli:v1.4.0-10.0.0
+        environment:
+            - logging.level.root=DEBUG
+            - KEYCLOAK_URL=http://keycloak:8080/auth
+            - KEYCLOAK_USER=admin
+            - KEYCLOAK_PASSWORD=admin123
+            - KEYCLOAK_ADMIN=admin
+            - KEYCLOAK_ADMIN_PASSWORD=admin123
+            - KEYCLOAK_AVAILABILITYCHECK_ENABLED=true
+            # The first time keycloak can take some time to be ready, use a sensible timeout
+            - KEYCLOAK_AVAILABILITYCHECK_TIMEOUT=120s
+            - IMPORT_VARSUBSTITUTION=true
+            - TESTUSER_PASSWORD=${TESTUSER_PASSWORD:-default}
+            - IMPORT_PATH=/config
+        volumes:
+            - ./resources/keycloak-config:/config
+        profiles:
+            - keycloak
+            - all
+volumes:
+    hume_keycloak_data:
+    hume_neo4j_data:
+      
