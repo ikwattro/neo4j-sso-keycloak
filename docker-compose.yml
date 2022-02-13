@@ -14,12 +14,12 @@ services:
             - NEO4J_dbms_security_authorization__providers=oidc-keycloak,native
             - NEO4J_dbms_security_oidc_keycloak_display__name=Keycloak
             - NEO4J_dbms_security_oidc_keycloak_.auth__flow=pkce
-            - NEO4J_dbms_security_oidc_keycloak_well__known__discovery__uri=http://keycloak:8080/auth/realms/my-realm/.well-known/openid-configuration
-            - NEO4J_dbms_security_oidc_keycloak_auth__endpoint=http://127.0.0.1:8180/auth/realms/my-realm/protocol/openid-connect/auth
-            - NEO4J_dbms_security_oidc_keycloak_token__endpoint=http://127.0.0.1:8180/auth/realms/my-realm/protocol/openid-connect/token
+            - NEO4J_dbms_security_oidc_keycloak_well__known__discovery__uri=http://keycloak:8080/realms/my-realm/.well-known/openid-configuration
+            - NEO4J_dbms_security_oidc_keycloak_auth__endpoint=http://127.0.0.1:8180/realms/my-realm/protocol/openid-connect/auth
+            - NEO4J_dbms_security_oidc_keycloak_token__endpoint=http://127.0.0.1:8180/realms/my-realm/protocol/openid-connect/token
             - NEO4J_dbms_security_oidc_keycloak_params=client_id=neo4j-sso;response_type=code;scope=openid email roles
             - NEO4J_dbms_security_oidc_keycloak_audience=account
-            - NEO4J_dbms_security_oidc_keycloak_issuer=http://127.0.0.1:8180/auth/realms/my-realm
+            - NEO4J_dbms_security_oidc_keycloak_issuer=http://127.0.0.1:8180/realms/my-realm
             - NEO4J_dbms_security_oidc_keycloak_client__id=neo4j-sso
             - NEO4J_dbms_security_oidc_keycloak_claims_username=preferred_username
             - NEO4J_dbms_security_oidc_keycloak_claims_groups=roles
@@ -38,33 +38,15 @@ services:
             - "./resources/neo4j-config:/config"
         profiles:
             - neo4j
-    postgres_keycloak:
-        image: docker.graphaware.com/mirror/postgres:12.0
-        environment:
-            POSTGRES_DB: keycloak
-            POSTGRES_USER: keycloak
-            POSTGRES_PASSWORD: password
-        command: -p 5433
-        expose:
-            - "5433" # Publishes 5433 to other containers but NOT to host machine
-        profiles:
-            - keycloak
-            - all
-        volumes:
-            - "keycloak_data:/var/lib/postgresql/data"
     keycloak:
-        image: quay.io/keycloak/keycloak:10.0.2
+        image: quay.io/keycloak/keycloak:17.0.0
         environment:
-            - DB_VENDOR=POSTGRES
-            - DB_ADDR=postgres_keycloak
-            - DB_PORT=5433
-            - DB_DATABASE=keycloak
-            - DB_USER=keycloak
-            - DB_SCHEMA=public
-            - DB_PASSWORD=password
-            - KEYCLOAK_USER=admin
-            - KEYCLOAK_PASSWORD=admin123
-            - PROXY_ADDRESS_FORWARDING=true
+            - KEYCLOAK_ADMIN=admin
+            - KEYCLOAK_ADMIN_PASSWORD=admin123
+            - KEYCLOAK_LOGLEVEL=INFO
+            - ROOT_LOGLEVEL=INFO
+        command:
+            - start-dev
         ports:
             - "8180:8080"
         depends_on: 
@@ -74,19 +56,13 @@ services:
             - all
             - keycloak
     keycloak-config:
-        image: adorsys/keycloak-config-cli:v1.4.0-10.0.0
+        image: adorsys/keycloak-config-cli:edge
         environment:
-            - logging.level.root=DEBUG
-            - KEYCLOAK_URL=http://keycloak:8080/auth
+            - KEYCLOAK_URL=http://keycloak:8080
             - KEYCLOAK_USER=admin
             - KEYCLOAK_PASSWORD=admin123
-            - KEYCLOAK_ADMIN=admin
-            - KEYCLOAK_ADMIN_PASSWORD=admin123
             - KEYCLOAK_AVAILABILITYCHECK_ENABLED=true
-            # The first time keycloak can take some time to be ready, use a sensible timeout
-            - KEYCLOAK_AVAILABILITYCHECK_TIMEOUT=120s
-            - IMPORT_VARSUBSTITUTION=true
-            - TESTUSER_PASSWORD=${TESTUSER_PASSWORD:-default}
+            - KEYCLOAK_AVAILABILITYCHECK_TIMEOUT=15s
             - IMPORT_PATH=/config
         volumes:
             - ./resources/keycloak-config:/config
@@ -94,6 +70,5 @@ services:
             - keycloak
             - all
 volumes:
-    keycloak_data:
     neo4j_data:
       
