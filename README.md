@@ -21,8 +21,8 @@ This repository contains a fuly pre-configured setup with Docker :
 - Realm named `my-realm` created
 - A `public openid` client named `neo4j-sso` created with 2 client roles `admin` and `analyst`
 - Two users configured
--- `admin / password` -> has `admin` role mapped to `neo4j-sso` client
--- `analyst / password` -> has `analyst` role mapped to `neo4j-sso` client
+    - `admin / password` -> has `admin` role mapped to `neo4j-sso` client
+    - `analyst / password` -> has `analyst` role mapped to `neo4j-sso` client
 
 ## Launch
 
