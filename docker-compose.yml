@@ -45,8 +45,13 @@ services:
             - KEYCLOAK_ADMIN_PASSWORD=admin123
             - KEYCLOAK_LOGLEVEL=INFO
             - ROOT_LOGLEVEL=INFO
+            - KC_DB=postgres
+            - KC_DB_URL=jdbc:postgresql://postgres/keycloak
+            - KC_DB_USERNAME=keycloak
+            - KC_DB_PASSWORD=password
+            - KC_DB_SCHEMA=public
         command:
-            - start-dev
+            - start --auto-build --hostname=localhost --http-enabled=true
         ports:
             - "8180:8080"
         depends_on: 
@@ -55,6 +60,20 @@ services:
         profiles:
             - all
             - keycloak
+    postgres:
+        image: docker.graphaware.com/mirror/postgres:12.0
+        environment:
+            POSTGRES_DB: keycloak
+            POSTGRES_USER: keycloak
+            POSTGRES_PASSWORD: password
+        command: -p 5432
+        expose:
+            - "5433" # Publishes 5433 to other containers but NOT to host machine
+        profiles:
+            - keycloak
+            - all
+        volumes:
+            - "keycloak_data:/var/lib/postgresql/data"
     keycloak-config:
         image: adorsys/keycloak-config-cli:edge
         environment:
@@ -71,4 +90,5 @@ services:
             - all
 volumes:
     neo4j_data:
+    keycloak_data:
       
