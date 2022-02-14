@@ -46,7 +46,9 @@ docker-compose logs -f keycloak
 You should see a line ressembling to the following
 
 ```
-Keycloak 10.0.2 (WildFly Core 11.1.1.Final) started in 18470ms
+2022-02-14 04:53:03,171 INFO  [io.quarkus] (main) Keycloak 17.0.0 on JVM (powered by Quarkus 2.7.0.Final) started in 10.420s
+...
+2022-02-14 04:53:07.778  INFO 1 --- [main] d.a.k.config.KeycloakConfigRunner        : keycloak-config-cli running in 00:20.060.
 ```
 
 ### Launch Neo4j
