@@ -16,13 +16,16 @@ This repository contains a fuly pre-configured setup with Docker :
 
 ### Keycloak
 
-- Keycloak running on localhost:8180
+- Keycloak 17 (on Quarkus) running on localhost:8180
 - Keycloak administrator credentials : `admin / admin123`
 - Realm named `my-realm` created
 - A `public openid` client named `neo4j-sso` created with 2 client roles `admin` and `analyst`
 - Two users configured
     - `admin / password` -> has `admin` role mapped to `neo4j-sso` client
     - `analyst / password` -> has `analyst` role mapped to `neo4j-sso` client
+
+
+> If you want to use a non-Quarkus setup of Keycloak, check out the `keycloak-15` branch of this repository
 
 ## Launch
 
