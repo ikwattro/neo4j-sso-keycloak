@@ -3,11 +3,11 @@ services:
     neo4j:
         image: neo4j:${NEO4J_VERSION}
         ports:
-            - "${NEO4J_HTTP_PORT:-7474}:7474"
-            - "${NEO4J_BOLT_PORT:-7687}:7687"
+            - "7474:7474"
+            - "7687:7687"
         environment:
             - NEO4J_ACCEPT_LICENSE_AGREEMENT=yes
-            - NEO4J_AUTH=neo4j/${NEO4J_PASSWORD:-password}
+            - NEO4J_AUTH=neo4j/password
             - NEO4J_dbms_connector_bolt_advertised__address=localhost:7687
             - NEO4J_apoc_trigger_enabled=true
             - NEO4J_dbms_security_authentication__providers=oidc-keycloak,native
@@ -15,10 +15,13 @@ services:
             - NEO4J_dbms_security_oidc_keycloak_display__name=Keycloak
             - NEO4J_dbms_security_oidc_keycloak_.auth__flow=pkce
             - NEO4J_dbms_security_oidc_keycloak_well__known__discovery__uri=http://keycloak:8080/realms/my-realm/.well-known/openid-configuration
+            # We need to use 127.0.0.1 since the Neo4j browser is sending additional headers
+            # such as `sentry-trace` causing CORS issues with the Keycloak server
             - NEO4J_dbms_security_oidc_keycloak_auth__endpoint=http://127.0.0.1:8180/realms/my-realm/protocol/openid-connect/auth
             - NEO4J_dbms_security_oidc_keycloak_token__endpoint=http://127.0.0.1:8180/realms/my-realm/protocol/openid-connect/token
             - NEO4J_dbms_security_oidc_keycloak_params=client_id=neo4j-sso;response_type=code;scope=openid email roles
             - NEO4J_dbms_security_oidc_keycloak_audience=account
+            # The issuer setting has to match the `iss` claim of the token
             - NEO4J_dbms_security_oidc_keycloak_issuer=http://127.0.0.1:8180/realms/my-realm
             - NEO4J_dbms_security_oidc_keycloak_client__id=neo4j-sso
             - NEO4J_dbms_security_oidc_keycloak_claims_username=preferred_username
@@ -27,6 +30,7 @@ services:
             - "neo4j_data:/data"
         profiles:
             - neo4j
+            - all
     neo4j-config-cli:
         image: graphaware/neo4j-config-cli:1.3.0
         environment:
@@ -38,6 +42,7 @@ services:
             - "./resources/neo4j-config:/config"
         profiles:
             - neo4j
+            - all
     keycloak:
         image: quay.io/keycloak/keycloak:17.0.0
         environment:
@@ -56,10 +61,9 @@ services:
             - "8180:8080"
         depends_on: 
             - postgres_keycloak
-        restart: always
         profiles:
-            - all
             - keycloak
+            - all
     postgres:
         image: docker.graphaware.com/mirror/postgres:12.0
         environment:
