@@ -46,16 +46,12 @@ services:
             - KEYCLOAK_LOGLEVEL=INFO
             - ROOT_LOGLEVEL=INFO
             - KC_DB=postgres
-            - DB_URL_DATABASE=keycloak
-            - KC_DB_PORT=5433
-            - DB_HOST=postgres_keycloak
-            - DB_URL=jdbc://postgres_keycloak:5433/keycloak
+            - KC_DB_URL=jdbc:postgresql://postgres/keycloak
             - KC_DB_USERNAME=keycloak
             - KC_DB_PASSWORD=password
             - KC_DB_SCHEMA=public
         command:
-            - build --db postgres
-            - start --db-username=keycloak --db-password=password --db-url-host=postgres --db-url=jdbc:postgresql://postgres/keycloak
+            - start --auto-build --hostname=localhost --http-enabled=true
         ports:
             - "8180:8080"
         depends_on: 
