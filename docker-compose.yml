@@ -44,7 +44,7 @@ services:
             - neo4j
             - all
     keycloak:
-        image: quay.io/keycloak/keycloak:17.0.0
+        image: quay.io/keycloak/keycloak:17.0.1
         environment:
             - KEYCLOAK_ADMIN=admin
             - KEYCLOAK_ADMIN_PASSWORD=admin123
@@ -56,7 +56,8 @@ services:
             - KC_DB_PASSWORD=password
             - KC_DB_SCHEMA=public
         command:
-            - start --auto-build --hostname=localhost --http-enabled=true
+            # - start --auto-build --hostname=localhost --http-enabled=true
+            - start --auto-build --db=postgres --hostname=localhost --http-enabled=true --hostname-strict-https=false
         ports:
             - "8180:8080"
         depends_on: 
