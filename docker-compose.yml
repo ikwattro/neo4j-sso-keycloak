@@ -44,10 +44,10 @@ services:
             - neo4j
             - all
     keycloak:
-        image: quay.io/keycloak/keycloak:17.0.1
+        image: quay.io/keycloak/keycloak:${KEYCLOAK_VERSION}
         environment:
-            - KEYCLOAK_ADMIN=admin
-            - KEYCLOAK_ADMIN_PASSWORD=admin123
+            - KEYCLOAK_ADMIN=${KEYCLOAK_ADMIN_USER}
+            - KEYCLOAK_ADMIN_PASSWORD=${KEYCLOAK_ADMIN_PASSWORD}
             - KEYCLOAK_LOGLEVEL=INFO
             - ROOT_LOGLEVEL=INFO
             - KC_DB=postgres

@@ -16,7 +16,7 @@ This repository contains a fuly pre-configured setup with Docker :
 
 ### Keycloak
 
-- [Keycloak 17](https://www.keycloak.org/) (on Quarkus) running on http://localhost:8180
+- [Keycloak 18](https://www.keycloak.org/) (on Quarkus) running on http://localhost:8180
 - Keycloak administrator credentials : `admin / admin123`
 - Realm named `my-realm` created
 - A `public openid` client named `neo4j-sso` created with 2 client roles `admin` and `analyst`
@@ -34,13 +34,13 @@ This repository contains a fuly pre-configured setup with Docker :
 Keycloak **must** be available before Neo4j
 
 ```
-docker-compose --profile keycloak up -d
+docker compose --profile keycloak up -d
 ```
 
 tail the logs until you see it's ready
 
 ```
-docker-compose logs -f keycloak
+docker compose logs -f keycloak
 ```
 
 You should see a line ressembling to the following
@@ -56,12 +56,12 @@ You should see a line ressembling to the following
 When Keycloak is ready, launch Neo4j
 
 ```
-docker-compose --profile neo4j up -d
+docker compose --profile neo4j up -d
 ```
 
 ### Login
 
-Go to the Neo4j browser and login with `admin/password` credentials
+Go to the Neo4j browser, choose SSO for the login and log in with `admin/password` credentials
 
 Check you can access the `movies` and `admins` db.
 
