@@ -29,39 +29,16 @@ This repository contains a fuly pre-configured setup with Docker :
 
 ## Launch
 
-### Launch Keycloak first
-
-Keycloak **must** be available before Neo4j
-
-```
-docker compose --profile keycloak up -d
-```
-
-tail the logs until you see it's ready
-
-```
-docker compose logs -f keycloak
-```
-
-You should see a line ressembling to the following
-
-```
-2022-02-14 04:53:03,171 INFO  [io.quarkus] (main) Keycloak 17.0.0 on JVM (powered by Quarkus 2.7.0.Final) started in 10.420s
-...
-2022-02-14 04:53:07.778  INFO 1 --- [main] d.a.k.config.KeycloakConfigRunner        : keycloak-config-cli running in 00:20.060.
-```
-
-### Launch Neo4j
-
-When Keycloak is ready, launch Neo4j
-
-```
-docker compose --profile neo4j up -d
+```bash
+docker-compose up -d
 ```
 
 ### Login
 
 Go to the Neo4j browser, choose SSO for the login and log in with `admin/password` credentials
+
+![neo4j loging](images/sso-login-neo4j-browser.png)
+![neo4j loging](images/sso-login-keycloak.png)
 
 Check you can access the `movies` and `admins` db.
 

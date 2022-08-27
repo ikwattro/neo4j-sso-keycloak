@@ -14,9 +14,13 @@ services:
             - NEO4J_dbms_security_authorization__providers=oidc-keycloak,native
             - NEO4J_dbms_security_oidc_keycloak_display__name=Keycloak
             - NEO4J_dbms_security_oidc_keycloak_.auth__flow=pkce
-            - NEO4J_dbms_security_oidc_keycloak_well__known__discovery__uri=http://keycloak:8080/realms/my-realm/.well-known/openid-configuration
+            # If you provide the well_known_discovery_uri config, Keycloak has to be up and running and 
+            # available when Neo4j starts
+            # Removing the config and providing manually the auth_endpoint, token_endpoint and jwks_uri removes that limitation
+            # - NEO4J_dbms_security_oidc_keycloak_well__known__discovery__uri=http://keycloak:8080/realms/my-realm/.well-known/openid-configuration
             - NEO4J_dbms_security_oidc_keycloak_auth__endpoint=http://127.0.0.1:8180/realms/my-realm/protocol/openid-connect/auth
             - NEO4J_dbms_security_oidc_keycloak_token__endpoint=http://127.0.0.1:8180/realms/my-realm/protocol/openid-connect/token
+            - NEO4J_dbms_security_oidc_keycloak_jwks__uri=http://keycloak:8080/realms/my-realm/protocol/openid-connect/certs
             - NEO4J_dbms_security_oidc_keycloak_params=client_id=neo4j-sso;response_type=code;scope=openid email roles
             - NEO4J_dbms_security_oidc_keycloak_audience=account
             - NEO4J_dbms_security_oidc_keycloak_issuer=http://127.0.0.1:8180/realms/my-realm
@@ -26,9 +30,6 @@ services:
             - NEO4J_browser_allow__outgoing__connections=false
         volumes:
             - "neo4j_data:/data"
-        profiles:
-            - neo4j
-            - all
     neo4j-config-cli:
         image: graphaware/neo4j-config-cli:1.3.0
         environment:
@@ -38,9 +39,6 @@ services:
             - IMPORT_PATH=/config
         volumes:
             - "./resources/neo4j-config:/config"
-        profiles:
-            - neo4j
-            - all
     keycloak:
         image: quay.io/keycloak/keycloak:${KEYCLOAK_VERSION}
         environment:
@@ -60,9 +58,6 @@ services:
             - "8180:8080"
         depends_on: 
             - postgres
-        profiles:
-            - keycloak
-            - all
     postgres:
         image: postgres:14-alpine
         environment:
@@ -72,9 +67,6 @@ services:
         command: -p 5432
         expose:
             - "5433" # Publishes 5433 to other containers but NOT to host machine
-        profiles:
-            - keycloak
-            - all
         volumes:
             - "keycloak_data:/var/lib/postgresql/data"
     keycloak-config:
@@ -88,9 +80,6 @@ services:
             - IMPORT_PATH=/config
         volumes:
             - ./resources/keycloak-config:/config
-        profiles:
-            - keycloak
-            - all
 volumes:
     neo4j_data:
     keycloak_data:
