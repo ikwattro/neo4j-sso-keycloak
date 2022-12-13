@@ -33,6 +33,22 @@
                     "analyst"
                 ]
             }
+        },
+        {
+          "username": "demouser",
+            "email": "demouser@example.com",
+            "enabled": true,
+            "credentials": [
+              {
+                "type": "password",
+                "value": "password"
+              }
+            ],
+            "clientRoles": {
+                "demo-client": [
+                    "analyst"
+                ]
+            }
         }
     ],
     "roles": {
@@ -53,10 +69,44 @@
                     "clientRole": true,
                     "attributes": {}
                 }
+            ],
+            "demo-client": [
+              {
+                "name": "analyst",
+                "description": "demo client analyst role",
+                "composite": false,
+                "clientRole": true,
+                "attributes": {}
+              }
             ]
         }
     },
     "clients": [
+        {
+          "clientId": "demo-client",
+          "name": "demo-client",
+          "description": "Demo Client used for another application than Neo4j",
+          "enabled": true,
+          "publicClient": true,
+          "consentRequired": false,
+          "standardFlowEnabled": true,
+          "implicitFlowEnabled": true,
+          "directAccessGrantsEnabled": true,
+          "serviceAccountsEnabled": false,
+          "frontchannelLogout": false,
+          "protocol": "openid-connect",
+          "clientAuthenticatorType": "client-secret",
+          "secret": "q3sjAeJAyLzP3W4v",
+          "redirectUris": [
+              "*"
+          ],
+          "webOrigins": [
+              "*"
+          ],
+          "attributes": {
+              "post.logout.redirect.uris": "*"
+          }
+        },
         {
             "clientId": "neo4j-sso",
             "surrogateAuthRequired": false,
