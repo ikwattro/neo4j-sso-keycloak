@@ -8,8 +8,6 @@ services:
         environment:
             - NEO4J_ACCEPT_LICENSE_AGREEMENT=yes
             - NEO4J_AUTH=neo4j/${NEO4J_PASSWORD:-password}
-            - NEO4J_dbms_connector_bolt_advertised__address=0.0.0.0:7687
-            - NEO4J_apoc_trigger_enabled=true
             - NEO4J_dbms_security_authentication__providers=oidc-keycloak,native
             - NEO4J_dbms_security_authorization__providers=oidc-keycloak,native
             - NEO4J_dbms_security_oidc_keycloak_display__name=Keycloak
@@ -17,19 +15,24 @@ services:
             # If you provide the well_known_discovery_uri config, Keycloak has to be up and running and 
             # available when Neo4j starts
             # Removing the config and providing manually the auth_endpoint, token_endpoint and jwks_uri removes that limitation
-            # - NEO4J_dbms_security_oidc_keycloak_well__known__discovery__uri=http://keycloak:8080/realms/my-realm/.well-known/openid-configuration
-            - NEO4J_dbms_security_oidc_keycloak_auth__endpoint=http://127.0.0.1:8180/realms/my-realm/protocol/openid-connect/auth
-            - NEO4J_dbms_security_oidc_keycloak_token__endpoint=http://127.0.0.1:8180/realms/my-realm/protocol/openid-connect/token
-            - NEO4J_dbms_security_oidc_keycloak_jwks__uri=http://keycloak:8080/realms/my-realm/protocol/openid-connect/certs
+            # - NEO4J_dbms_security_oidc_keycloak_well__known__discovery__uri=https://keycloak:8080/realms/my-realm/.well-known/openid-configuration
+            # Additionnally, using 127.0.0.1 as public url for the user is necessary since the Neo4j browser sends 
+            # sentry headers which are not accepted by Keycloak for CORS requests
+            - NEO4J_dbms_security_oidc_keycloak_auth__endpoint=https://127.0.0.1:8443/realms/my-realm/protocol/openid-connect/auth
+            - NEO4J_dbms_security_oidc_keycloak_token__endpoint=https://127.0.0.1:8443/realms/my-realm/protocol/openid-connect/token
+            - NEO4J_dbms_security_oidc_keycloak_jwks__uri=https://${LOCAL_DEV_HOST}:8443/realms/my-realm/protocol/openid-connect/certs
             - NEO4J_dbms_security_oidc_keycloak_params=client_id=neo4j-sso;response_type=code;scope=openid email roles
             - NEO4J_dbms_security_oidc_keycloak_audience=account
-            - NEO4J_dbms_security_oidc_keycloak_issuer=http://127.0.0.1:8180/realms/my-realm
+            - NEO4J_dbms_security_oidc_keycloak_issuer=https://127.0.0.1:8443/realms/my-realm
             - NEO4J_dbms_security_oidc_keycloak_client__id=neo4j-sso
             - NEO4J_dbms_security_oidc_keycloak_claims_username=preferred_username
             - NEO4J_dbms_security_oidc_keycloak_claims_groups=roles
             - NEO4J_browser_allow__outgoing__connections=false
         volumes:
             - "neo4j_data:/data"
+            - "./certificates/cacerts.neo4j:/opt/java/openjdk/lib/security/cacerts"
+        extra_hosts:
+            - "${LOCAL_DEV_HOST}:host-gateway"
     neo4j-config-cli:
         image: graphaware/neo4j-config-cli:1.3.0
         environment:
@@ -45,19 +48,18 @@ services:
             - KEYCLOAK_ADMIN=${KEYCLOAK_ADMIN_USER}
             - KEYCLOAK_ADMIN_PASSWORD=${KEYCLOAK_ADMIN_PASSWORD}
             - KC_DB_URL=jdbc:postgresql://postgres/keycloak
+            - KC_HOSTNAME=127.0.0.1
             - KC_DB_USERNAME=keycloak
             - KC_DB_PASSWORD=password
-            - KC_HTTP_ENBALED=true
-            - KC_HTTP_PORT=8080
-            - KC_HOSTNAME=127.0.0.1
-            - KC_HOSTNAME_PORT=8180
-            - KC_HOSTNAME_ADMIN=localhost
         command:
-            - start-dev --db=postgres
+            - start --db=postgres --https-certificate-file=/certs/${LOCAL_DEV_HOST}.pem --https-certificate-key-file=/certs/${LOCAL_DEV_HOST}-key.pem
         ports:
             - "8180:8080"
+            - "8443:8443"
         depends_on: 
             - postgres
+        volumes:
+            - "./certificates:/certs"
     postgres:
         image: postgres:14-alpine
         environment:
@@ -70,16 +72,19 @@ services:
         volumes:
             - "keycloak_data:/var/lib/postgresql/data"
     keycloak-config:
-        image: adorsys/keycloak-config-cli:edge
+        image: adorsys/keycloak-config-cli:latest-19.0.3
         environment:
-            - KEYCLOAK_URL=http://keycloak:8080
+            - KEYCLOAK_URL=https://${LOCAL_DEV_HOST}:8443
             - KEYCLOAK_USER=admin
             - KEYCLOAK_PASSWORD=admin123
             - KEYCLOAK_AVAILABILITYCHECK_ENABLED=true
             - KEYCLOAK_AVAILABILITYCHECK_TIMEOUT=25s
             - IMPORT_PATH=/config
+            - KEYCLOAK_SSL_VERIFY=false
         volumes:
             - ./resources/keycloak-config:/config
+        extra_hosts:
+            - "${LOCAL_DEV_HOST}:host-gateway"
 volumes:
     neo4j_data:
     keycloak_data:
