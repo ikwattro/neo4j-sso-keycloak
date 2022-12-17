@@ -91,7 +91,7 @@ Now we need to add the certificates to a java cacerts file, the easiest way to d
 docker run --rm -it --name neo4j-cacerts -v $(PWD)/certificates:/opt/java/openjdk/lib/security neo4j:5.3.0-enterprise keytool -keystore /opt/java/openjdk/lib/security/cacerts -storepass changeit -importcert -noprompt -alias dev-local-ca -file /opt/java/openjdk/lib/security/rootCA.pem
 ```
 
-The next command will add a `cacerts` file in the `certificates` directory
+The latest command added the `cacerts` file in the `certificates` directory
 
 ```bash
 $ ls -la certificates/
