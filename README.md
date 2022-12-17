@@ -50,20 +50,4 @@ You should see only the `movies` and `neo4j` databases, you also shouldn't see t
 
 ---
 
-Generate local https cert
-
-```
-docker run -v "./certificates:/root/.local/share/mkcert" brunopadz/mkcert-docker:latest \
-/bin/sh -c "mkcert -install && \
-mkcert -cert-file /root/.local/share/mkcert/mkcert.pem \
--key-file /root/.local/share/mkcert/mkcert.key localhost.dev"
-
-
-docker run -v /Users/christophewillemsen/dev/graphaware/cto/neo4j-sso-keycloak/certificates:/root/.local/share/mkcert brunopadz/mkcert-docker:latest /bin/sh -c "mkcert -install && mkcert -cert-file /root/.local/share/mkcert mkcert.pem -key-file /root/.local/share/mkcert/mkcert.key localhost.dev"
-
-
-
-
-docker run -d -e domain=dev.localhost.com --name mkcert -v /Users/christophewillemsen/dev/graphaware/cto/neo4j-sso-keycloak/certificates:/root/.local/share/mkcert vishnunair/docker-mkcert
-
-sudo security add-trusted-cert -d -r trustRoot -k /Library/Keychains/System.keychain /Users/christophewillemsen/dev/graphaware/cto/neo4j-sso-keycloak/certificates/rootCA.pem
+Generate local https cert with https://github.com/ikwattro/mkcert-docker
