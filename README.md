@@ -91,7 +91,7 @@ Now we need to add the certificates to a java cacerts file, the easiest way to d
 docker run --rm -it --name neo4j-cacerts -v $(PWD)/certificates:/opt/java/openjdk/lib/security neo4j:5.3.0-enterprise keytool -keystore /opt/java/openjdk/lib/security/cacerts -storepass changeit -importcert -noprompt -alias dev-local-ca -file /opt/java/openjdk/lib/security/rootCA.pem
 ```
 
-The latest command will add a `cacerts` file in the `certificates` directory
+The next command will add a `cacerts` file in the `certificates` directory
 
 ```bash
 $ ls -la certificates/
@@ -106,7 +106,7 @@ drwxr-xr-x  10 christophewillemsen  staff   320 Dec 17 17:50 ../
 -rw-r--r--   1 christophewillemsen  staff  1639 Dec 17 22:07 rootCA.pem
 ```
 
-The last step is to add `dev.localhost.com` or your chosen domain name to your `/etc/hosts` file 
+The last step is to add `dev.localhost.com` or your chosen domain name to your `/etc/hosts` file
 
 ```
 127.0.0.1	dev.localhost.com
@@ -115,6 +115,12 @@ The last step is to add `dev.localhost.com` or your chosen domain name to your `
 ## Launch
 
 If you didn't use `dev.localhost.com` is to edit the variable `LOCAL_DEV_HOST` in the `.env` file of this repository with your chosen domain name.
+
+The `docker-compose` file is configured for taking into account the usage of local certificates, mainly the following sections are relevant : 
+
+- the `cacerts` file mounted in the neo4j container
+- `extra_hosts` section for the `neo4j` and `keycloak-config` services so they use the host's entry for the domain name
+- using the certificates in the `keycloak` startup command
 
 ```bash
 docker-compose up -d
