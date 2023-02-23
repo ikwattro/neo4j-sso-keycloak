@@ -16,7 +16,7 @@ This repository contains a fuly pre-configured setup with Docker :
 
 ### Keycloak
 
-- [Keycloak 19.0.1](https://www.keycloak.org/) (on Quarkus) running on http://localhost:8180
+- [Keycloak 20.x](https://www.keycloak.org/) (on Quarkus) running on http://localhost:8180
 - Keycloak administrator credentials : `admin / admin123`
 - Realm named `my-realm` created
 - A `public openid` client named `neo4j-sso` created with 2 client roles `admin` and `analyst`
@@ -88,7 +88,7 @@ sudo security add-trusted-cert -d -r trustRoot -k /Library/Keychains/System.keyc
 Now we need to add the certificates to a java cacerts file, the easiest way to do this is to copy the cacerts file from a neo4j container
 
 ```bash
-docker run --rm -it --name neo4j-cacerts -v $(PWD)/certificates:/opt/java/openjdk/lib/security neo4j:5.3.0-enterprise keytool -keystore /opt/java/openjdk/lib/security/cacerts -storepass changeit -importcert -noprompt -alias dev-local-ca -file /opt/java/openjdk/lib/security/rootCA.pem
+docker run --rm -it --name neo4j-cacerts -v $(PWD)/certificates:/opt/java/openjdk/lib/security neo4j:5.5.0-enterprise keytool -keystore /opt/java/openjdk/lib/security/cacerts -storepass changeit -importcert -noprompt -alias dev-local-ca -file /opt/java/openjdk/lib/security/rootCA.pem
 ```
 
 The latest command added the `cacerts` file in the `certificates` directory
