@@ -33,6 +33,14 @@ services:
             - "./certificates/cacerts.neo4j:/opt/java/openjdk/lib/security/cacerts"
         extra_hosts:
             - "${LOCAL_DEV_HOST}:host-gateway"
+        healthcheck:
+            test: wget http://localhost:7474 || exit 1
+            interval: 5s
+            timeout: 5s
+            retries: 3
+        depends_on:
+            keycloak:
+                condition: service_healthy
     neo4j-config-cli:
         image: graphaware/neo4j-config-cli:2.6.0
         environment:
@@ -42,6 +50,10 @@ services:
             - IMPORT_PATH=/config
         volumes:
             - "./resources/neo4j-config:/config"
+        depends_on:
+            neo4j:
+                condition: service_healthy
+
     keycloak:
         image: quay.io/keycloak/keycloak:${KEYCLOAK_VERSION}
         environment:
@@ -51,15 +63,24 @@ services:
             - KC_HOSTNAME=127.0.0.1
             - KC_DB_USERNAME=keycloak
             - KC_DB_PASSWORD=password
-        command:
-            - start --db=postgres --https-certificate-file=/certs/${LOCAL_DEV_HOST}.pem --https-certificate-key-file=/certs/${LOCAL_DEV_HOST}-key.pem
+            - KC_HEALTH_ENABLED=true
+            - KC_METRICS_ENABLED=true
+            - KC_HTTP_ENABLED=true
+        command: start --https-certificate-file=/certs/${LOCAL_DEV_HOST}.pem --https-certificate-key-file=/certs/${LOCAL_DEV_HOST}-key.pem
         ports:
             - "8180:8080"
             - "8443:8443"
-        depends_on: 
-            - postgres
+        healthcheck:
+            test: ["CMD-SHELL", "exec 3<>/dev/tcp/127.0.0.1/8080;echo -e \"GET /health/ready HTTP/1.1\r\nhost: http://localhost\r\nConnection: close\r\n\r\n\" >&3;grep \"HTTP/1.1 200 OK\" <&3"]
+            interval: 5s
+            timeout: 5s
+            retries: 10
+        depends_on:
+            postgres:
+                condition: service_healthy
         volumes:
             - "./certificates:/certs"
+
     postgres:
         image: postgres:14-alpine
         environment:
@@ -70,7 +91,14 @@ services:
         expose:
             - "5433" # Publishes 5433 to other containers but NOT to host machine
         volumes:
-            - "keycloak_data:/var/lib/postgresql/data"
+            - "./keycloak_data:/var/lib/postgresql/data"
+        healthcheck:
+            test: ["CMD-SHELL", "sh -c 'psql -U keycloak -d keycloak'"]
+            interval: 5s
+            timeout: 5s
+            retries: 5
+            start_period: 5s
+
     keycloak-config:
         image: adorsys/keycloak-config-cli:latest-19.0.3
         environment:
@@ -85,6 +113,10 @@ services:
             - ./resources/keycloak-config:/config
         extra_hosts:
             - "${LOCAL_DEV_HOST}:host-gateway"
+        depends_on:
+            keycloak:
+                condition: service_healthy
+
 volumes:
     neo4j_data:
     keycloak_data:
