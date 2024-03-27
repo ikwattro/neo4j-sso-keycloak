@@ -11,26 +11,22 @@ services:
             - NEO4J_dbms_security_authentication__providers=oidc-keycloak,native
             - NEO4J_dbms_security_authorization__providers=oidc-keycloak,native
             - NEO4J_dbms_security_oidc_keycloak_display__name=Keycloak
-            - NEO4J_dbms_security_oidc_keycloak_.auth__flow=pkce
-            # If you provide the well_known_discovery_uri config, Keycloak has to be up and running and 
-            # available when Neo4j starts
-            # Removing the config and providing manually the auth_endpoint, token_endpoint and jwks_uri removes that limitation
-            # - NEO4J_dbms_security_oidc_keycloak_well__known__discovery__uri=https://keycloak:8080/realms/my-realm/.well-known/openid-configuration
-            # Additionnally, using 127.0.0.1 as public url for the user is necessary since the Neo4j browser sends 
-            # sentry headers which are not accepted by Keycloak for CORS requests
-            - NEO4J_dbms_security_oidc_keycloak_auth__endpoint=https://127.0.0.1:8443/realms/my-realm/protocol/openid-connect/auth
-            - NEO4J_dbms_security_oidc_keycloak_token__endpoint=https://127.0.0.1:8443/realms/my-realm/protocol/openid-connect/token
-            - NEO4J_dbms_security_oidc_keycloak_jwks__uri=https://${LOCAL_DEV_HOST}:8443/realms/my-realm/protocol/openid-connect/certs
+            - NEO4J_dbms_security_oidc_keycloak_auth__flow=pkce
+            - NEO4J_dbms_security_oidc_keycloak_well__known__discovery__uri=https://${LOCAL_DEV_HOST}:8443/realms/my-realm/.well-known/openid-configuration
             - NEO4J_dbms_security_oidc_keycloak_params=client_id=neo4j-sso;response_type=code;scope=openid email roles
-            - NEO4J_dbms_security_oidc_keycloak_audience=account
-            - NEO4J_dbms_security_oidc_keycloak_issuer=https://127.0.0.1:8443/realms/my-realm
-            - NEO4J_dbms_security_oidc_keycloak_client__id=neo4j-sso
+            - NEO4J_dbms_security_oidc_keycloak_config=token_type_principal=id_token;token_type_authentication=id_token # <- https://github.com/keycloak/keycloak/discussions/12971
+            - NEO4J_dbms_security_oidc_keycloak_issuer=https://${LOCAL_DEV_HOST}:8443/realms/my-realm
+            - NEO4J_dbms_security_oidc_keycloak_client__id=neo4j-sso # <- https://github.com/keycloak/keycloak/discussions/12971
+            - NEO4J_dbms_security_oidc_keycloak_claims_client__id=neo4j-sso # <- https://github.com/keycloak/keycloak/discussions/12971
+            - NEO4J_dbms_security_oidc_keycloak_claims_audience=neo4j-sso
+            - NEO4J_dbms_security_oidc_keycloak_audience=neo4j-sso
             - NEO4J_dbms_security_oidc_keycloak_claims_username=preferred_username
             - NEO4J_dbms_security_oidc_keycloak_claims_groups=roles
-            - NEO4J_browser_allow__outgoing__connections=false
+            - NEO4J_dbms_security_logs_oidc_jwt__claims__at__debug__level__enabled=true
         volumes:
-            - "neo4j_data:/data"
-            - "./certificates/cacerts.neo4j:/opt/java/openjdk/lib/security/cacerts"
+            - "./neo4j_data:/data"
+            - "./certificates/cacerts:/opt/java/openjdk/lib/security/cacerts"
+            #- "./server-logs.xml:/var/lib/neo4j/conf/server-logs.xml" #<- Uncomment to activate debug logs on Neo4j
         extra_hosts:
             - "${LOCAL_DEV_HOST}:host-gateway"
         healthcheck:
@@ -59,8 +55,12 @@ services:
         environment:
             - KEYCLOAK_ADMIN=${KEYCLOAK_ADMIN_USER}
             - KEYCLOAK_ADMIN_PASSWORD=${KEYCLOAK_ADMIN_PASSWORD}
-            - KC_DB_URL=jdbc:postgresql://postgres/keycloak
-            - KC_HOSTNAME=127.0.0.1
+            - KC_DB=postgres
+            - KC_DB_URL_HOST=postgres
+            - KC_DB_URL_DATABASE=postgres
+            - KC_DB_URL_PORT=5432
+            - KC_HOSTNAME_URL=https://${LOCAL_DEV_HOST}:8443
+            - KC_HOSTNAME_ADMIN_URL=https://${LOCAL_DEV_HOST}:8443
             - KC_DB_USERNAME=keycloak
             - KC_DB_PASSWORD=password
             - KC_HEALTH_ENABLED=true
@@ -68,7 +68,7 @@ services:
             - KC_HTTP_ENABLED=true
         command: start --https-certificate-file=/certs/${LOCAL_DEV_HOST}.pem --https-certificate-key-file=/certs/${LOCAL_DEV_HOST}-key.pem
         ports:
-            - "8180:8080"
+            - "8080:8080"
             - "8443:8443"
         healthcheck:
             test: ["CMD-SHELL", "exec 3<>/dev/tcp/127.0.0.1/8080;echo -e \"GET /health/ready HTTP/1.1\r\nhost: http://localhost\r\nConnection: close\r\n\r\n\" >&3;grep \"HTTP/1.1 200 OK\" <&3"]
@@ -89,7 +89,7 @@ services:
             POSTGRES_PASSWORD: password
         command: -p 5432
         expose:
-            - "5433" # Publishes 5433 to other containers but NOT to host machine
+            - "5432:5432" # Publishes 5433 to other containers but NOT to host machine
         volumes:
             - "./keycloak_data:/var/lib/postgresql/data"
         healthcheck:

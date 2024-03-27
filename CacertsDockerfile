@@ -1,0 +1,13 @@
+FROM neo4j:5.15.0-enterprise
+
+ARG CERTIFICATES_PATH=certificates
+
+RUN apt-get update && apt-get install -y openssl
+
+COPY ${CERTIFICATES_PATH}/rootCA.pem /usr/local/share/ca-certificates/
+
+RUN ls -lisa /opt/java/openjdk/lib/security
+
+RUN keytool -keystore /opt/java/openjdk/lib/security/cacerts -storepass changeit -importcert -noprompt -alias dev-keycloak-ca -file /usr/local/share/ca-certificates/rootCA.pem
+
+CMD ["cp", "/opt/java/openjdk/lib/security/cacerts", "/tmp/cacerts"]

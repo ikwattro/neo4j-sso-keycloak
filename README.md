@@ -39,14 +39,14 @@ This repository contains a `certificates` directory, we will use it to store our
 
 To generate the certificates we will use mkcert, but using a Docker image so you don't have to install anything locally.
 
-First, choose a domain name for your local development, the examples will use `dev.localhost.com`, make sure to replace the occurrences with your chosen domain name when instructed.
+First, choose a domain name for your local development, the examples will use `keycloak`, make sure to replace the occurrences with your chosen domain name when instructed.
 
 ### Generate the certificates
 
-From the root of this repo, run the following command ( replace `dev.localhost.com` with your chosen domain name )
+From the root of this repo, run the following command ( replace `keycloak` with your chosen domain name )
 
 ```bash
-docker run --rm -it -e domain=dev.localhost.com --name mkcert -v $PWD/certificates:/root/.local/share/mkcert ikwattro/mkcert-docker
+docker run --rm -it -e domain=keycloak --name mkcert -v $PWD/certificates:/root/.local/share/mkcert ikwattro/mkcert-docker
 
 
 // out
@@ -55,9 +55,9 @@ The local CA is now installed in the system trust store! ⚡️
 
 
 Created a new certificate valid for the following names 📜
- - "dev.localhost.com"
+ - "keycloak"
 
-The certificate is at "./dev.localhost.com.pem" and the key at "./dev.localhost.com-key.pem" ✅
+The certificate is at "./keycloak.pem" and the key at "./keycloak-key.pem" ✅
 
 It will expire on 17 March 2025 🗓
 ```
@@ -73,8 +73,8 @@ total 40
 drwxr-xr-x   7 christophewillemsen  staff   224 Dec 17 22:07 ./
 drwxr-xr-x  10 christophewillemsen  staff   320 Dec 17 17:50 ../
 -rw-r--r--   1 christophewillemsen  staff    13 Dec 17 15:15 .gitignore
--rw-------   1 christophewillemsen  staff  1704 Dec 17 22:07 dev.localhost.com-key.pem
--rw-r--r--   1 christophewillemsen  staff  1476 Dec 17 22:07 dev.localhost.com.pem
+-rw-------   1 christophewillemsen  staff  1704 Dec 17 22:07 keycloak-key.pem
+-rw-r--r--   1 christophewillemsen  staff  1476 Dec 17 22:07 keycloak.pem
 -r--------   1 christophewillemsen  staff  2484 Dec 17 22:07 rootCA-key.pem
 -rw-r--r--   1 christophewillemsen  staff  1639 Dec 17 22:07 rootCA.pem
 ```
@@ -88,7 +88,11 @@ sudo security add-trusted-cert -d -r trustRoot -k /Library/Keychains/System.keyc
 Now we need to add the certificates to a java cacerts file, the easiest way to do this is to copy the cacerts file from a neo4j container
 
 ```bash
-docker run --rm -it --name neo4j-cacerts -v $(PWD)/certificates:/opt/java/openjdk/lib/security neo4j:5.5.0-enterprise keytool -keystore /opt/java/openjdk/lib/security/cacerts -storepass changeit -importcert -noprompt -alias dev-local-ca -file /opt/java/openjdk/lib/security/rootCA.pem
+docker build -t java-cacerts-import --build-arg CERTIFICATES_PATH=certificates  -f CacertsDockerfile .
+```
+
+```bash
+docker run --rm -it --name neo4j-cacerts -v $(PWD)/certificates:/tmp/cacerts java-cacerts-import
 ```
 
 The latest command added the `cacerts` file in the `certificates` directory
@@ -100,21 +104,21 @@ drwxr-xr-x   8 christophewillemsen  staff   256 Dec 17 22:19 ./
 drwxr-xr-x  10 christophewillemsen  staff   320 Dec 17 17:50 ../
 -rw-r--r--   1 christophewillemsen  staff    13 Dec 17 15:15 .gitignore
 -rw-r--r--   1 christophewillemsen  staff  1558 Dec 17 22:19 cacerts
--rw-------   1 christophewillemsen  staff  1704 Dec 17 22:07 dev.localhost.com-key.pem
--rw-r--r--   1 christophewillemsen  staff  1476 Dec 17 22:07 dev.localhost.com.pem
+-rw-------   1 christophewillemsen  staff  1704 Dec 17 22:07 keycloak-key.pem
+-rw-r--r--   1 christophewillemsen  staff  1476 Dec 17 22:07 keycloak.pem
 -r--------   1 christophewillemsen  staff  2484 Dec 17 22:07 rootCA-key.pem
 -rw-r--r--   1 christophewillemsen  staff  1639 Dec 17 22:07 rootCA.pem
 ```
 
-The last step is to add `dev.localhost.com` or your chosen domain name to your `/etc/hosts` file
+The last step is to add `keycloak` or your chosen domain name to your `/etc/hosts` file
 
 ```
-127.0.0.1	dev.localhost.com
+127.0.0.1	keycloak
 ```
 
 ## Launch
 
-If you didn't use `dev.localhost.com` is to edit the variable `LOCAL_DEV_HOST` in the `.env` file of this repository with your chosen domain name.
+If you didn't use `keycloak` is to edit the variable `LOCAL_DEV_HOST` in the `.env` file of this repository with your chosen domain name.
 
 The `docker-compose` file is configured for taking into account the usage of local certificates, mainly the following sections are relevant : 
 
@@ -128,7 +132,7 @@ docker-compose up -d
 
 ### Login
 
-Go to the Neo4j browser, choose SSO for the login and log in with `admin/password` credentials
+Go to the Neo4j browser (http://localhost:7474/), choose SSO for the login and log in with `admin/password` credentials
 
 ![neo4j loging](images/sso-login-neo4j-browser.png)
 ![neo4j loging](images/sso-login-keycloak.png)
