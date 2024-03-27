@@ -2,13 +2,13 @@
     "kind": "Database",
     "name": "admins",
     "dropIfExists": true,
-    "skipCreate": false,
     "indexes": {
-      "fulltext" : [
+      "nodes" : [
         {
           "labels": ["Person"],
           "properties": ["name"],
-          "name": "Person"
+          "name": "idx_admins_person_name",
+          "type": "FULLTEXT"
         }
       ]
     },

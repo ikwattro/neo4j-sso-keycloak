@@ -2,21 +2,24 @@
     "kind": "Database",
     "name": "movies",
     "dropIfExists": true,
-    "skipCreate": false,
     "indexes": {
-      "fulltext" : [
+      "nodes" : [
         {
           "labels": ["Person"],
           "properties": ["name"],
-          "name": "Person"
+          "name": "idx_movies_person_name",
+          "type": "FULLTEXT"
         }
       ]
     },
     "constraints": {
-      "unique": [
+      "nodes": [
         {
-          "label": "Movie",
-          "property": "title"
+          "labels": ["Movie"],
+          "properties": ["title"],
+          "type": "NODE_KEY",
+          "propertyType": "STRING",
+          "name": "cst_movie_title_nk"
         }
       ]
     },

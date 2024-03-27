@@ -34,7 +34,7 @@ services:
         extra_hosts:
             - "${LOCAL_DEV_HOST}:host-gateway"
     neo4j-config-cli:
-        image: graphaware/neo4j-config-cli:1.3.0
+        image: graphaware/neo4j-config-cli:2.6.0
         environment:
             - NEO4J_USER=neo4j
             - NEO4J_PASSWORD=password
