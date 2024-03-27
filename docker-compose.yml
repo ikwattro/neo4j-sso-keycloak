@@ -100,13 +100,13 @@ services:
             start_period: 5s
 
     keycloak-config:
-        image: adorsys/keycloak-config-cli:latest-19.0.3
+        image: adorsys/keycloak-config-cli:latest
         environment:
             - KEYCLOAK_URL=https://${LOCAL_DEV_HOST}:8443
             - KEYCLOAK_USER=admin
             - KEYCLOAK_PASSWORD=admin123
             - KEYCLOAK_AVAILABILITYCHECK_ENABLED=true
-            - KEYCLOAK_AVAILABILITYCHECK_TIMEOUT=25s
+            - KEYCLOAK_AVAILABILITYCHECK_TIMEOUT=60s
             - IMPORT_PATH=/config
             - KEYCLOAK_SSL_VERIFY=false
         volumes:
