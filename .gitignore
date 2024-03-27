@@ -1,0 +1,4 @@
+certificates/*
+neo4j_data
+keycloak_data
+.DS_Store
