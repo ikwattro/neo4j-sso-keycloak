@@ -25,7 +25,7 @@ services:
         volumes:
             - "./neo4j_data:/data"
             - "./certificates/cacerts:/opt/java/openjdk/lib/security/cacerts"
-            #- "./server-logs.xml:/var/lib/neo4j/conf/server-logs.xml" #<- Uncomment to activate debug logs on Neo4j
+            - "./server-logs.xml:/var/lib/neo4j/conf/server-logs.xml"
         extra_hosts:
             - "${LOCAL_DEV_HOST}:host-gateway"
         healthcheck:
