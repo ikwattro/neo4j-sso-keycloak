@@ -16,7 +16,7 @@ This repository contains a fuly pre-configured setup with Docker :
 
 ### Keycloak
 
-- [Keycloak 20.x](https://www.keycloak.org/) (on Quarkus) running on http://localhost:8180
+- [Keycloak 25.x](https://www.keycloak.org/) (on Quarkus) running on http://localhost:8180
 - Keycloak administrator credentials : `admin / admin123`
 - Realm named `my-realm` created
 - A `public openid` client named `neo4j-sso` created with 2 client roles `admin` and `analyst`
@@ -127,7 +127,7 @@ The `docker-compose` file is configured for taking into account the usage of loc
 - using the certificates in the `keycloak` startup command
 
 ```bash
-docker-compose up -d
+docker compose up -d
 ```
 
 ### Login
