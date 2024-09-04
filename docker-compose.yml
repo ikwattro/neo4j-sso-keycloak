@@ -16,11 +16,10 @@ services:
             - NEO4J_dbms_security_oidc_keycloak_config=token_type_principal=id_token;token_type_authentication=id_token # <- https://github.com/keycloak/keycloak/discussions/12971
             - NEO4J_dbms_security_oidc_keycloak_issuer=https://${LOCAL_DEV_HOST}:8443/realms/my-realm
             - NEO4J_dbms_security_oidc_keycloak_client__id=neo4j-sso # <- https://github.com/keycloak/keycloak/discussions/12971
-            - NEO4J_dbms_security_oidc_keycloak_claims_client__id=neo4j-sso # <- https://github.com/keycloak/keycloak/discussions/12971
-            - NEO4J_dbms_security_oidc_keycloak_claims_audience=neo4j-sso
             - NEO4J_dbms_security_oidc_keycloak_audience=neo4j-sso
+            - NEO4J_dbms_security_oidc_keycloak_authorization_group__to__role__mapping="/Customers/Acme Corp/Admins" = admin; "/Customers/Acme Corp/Intel Level 5" = intel_level_5
             - NEO4J_dbms_security_oidc_keycloak_claims_username=preferred_username
-            - NEO4J_dbms_security_oidc_keycloak_claims_groups=roles
+            - NEO4J_dbms_security_oidc_keycloak_claims_groups=groups
             - NEO4J_dbms_security_logs_oidc_jwt__claims__at__debug__level__enabled=true
         volumes:
             - "./neo4j_data:/data"
@@ -110,6 +109,7 @@ services:
             - KEYCLOAK_AVAILABILITYCHECK_TIMEOUT=60s
             - IMPORT_PATH=/config
             - KEYCLOAK_SSL_VERIFY=false
+            - DEBUG=true
         volumes:
             - ./resources/keycloak-config:/config
         extra_hosts:
