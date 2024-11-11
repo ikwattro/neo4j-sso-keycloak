@@ -1,6 +1,24 @@
 {
     "enabled": true,
     "realm": "my-realm",
+    "groups": [
+      {
+        "name": "Customers",
+        "subGroups": [
+          {
+            "name": "Acme Corp",
+            "subGroups": [
+              {
+                "name": "Admins"
+              },
+              {
+                "name": "Intel Level 5"
+              }
+            ]
+          }
+        ]
+      }
+    ],
     "users": [
         {
             "username": "admin",
@@ -16,7 +34,10 @@
                 "neo4j-sso": [
                     "admin"
                 ]
-            }
+            },
+            "groups": [
+              "Customers/Acme Corp/Admins"
+            ]
         },
         {
             "username": "analyst",
@@ -32,7 +53,10 @@
                 "neo4j-sso": [
                     "analyst"
                 ]
-            }
+            },
+            "groups": [
+              "Customers/Acme Corp/Intel Level 5"
+            ]
         }
     ],
     "roles": {
@@ -134,6 +158,21 @@
                   "access.token.claim": "true",
                   "claim.name": "email",
                   "jsonType.label": "String"
+                }
+              },
+              {
+                "name": "groups",
+                "protocol": "openid-connect",
+                "protocolMapper": "oidc-group-membership-mapper",
+                "consentRequired": false,
+                "config": {
+                  "full.path": "true",
+                  "introspection.token.claim": "true",
+                  "userinfo.token.claim": "true",
+                  "id.token.claim": "true",
+                  "lightweight.claim": "false",
+                  "access.token.claim": "true",
+                  "claim.name": "groups"
                 }
               }
             ],
