@@ -16,7 +16,7 @@ This repository contains a fuly pre-configured setup with Docker :
 
 ### Keycloak
 
-- [Keycloak 26.x](https://www.keycloak.org/) (on Quarkus) running on http://localhost:8443
+- [Keycloak 26.x](https://www.keycloak.org/) (on Quarkus) running on https://keycloak:8443
 - Keycloak administrator credentials : `admin / admin123`
 - Realm named `my-realm` created
 - A `public openid` client named `neo4j-sso` created with 2 client roles `admin` and `analyst`
