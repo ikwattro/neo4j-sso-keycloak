@@ -8,7 +8,7 @@ This repository contains a fuly pre-configured setup with Docker :
 
 ### Neo4j
 
-- [Neo4j 5.x](https://neo4j.com) running on http://localhost:7474
+- [Neo4j 5.26](https://neo4j.com) running on http://localhost:7474
 - Movies DB created with movies data
 - Admins DB created with one Admin node
 - Native authentication : `neo4j / password`
@@ -16,7 +16,7 @@ This repository contains a fuly pre-configured setup with Docker :
 
 ### Keycloak
 
-- [Keycloak 25.x](https://www.keycloak.org/) (on Quarkus) running on http://localhost:8443
+- [Keycloak 26.x](https://www.keycloak.org/) (on Quarkus) running on http://localhost:8443
 - Keycloak administrator credentials : `admin / admin123`
 - Realm named `my-realm` created
 - A `public openid` client named `neo4j-sso` created with 2 client roles `admin` and `analyst`
