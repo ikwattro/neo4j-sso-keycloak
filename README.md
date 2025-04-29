@@ -134,8 +134,8 @@ docker compose up -d
 
 Go to the Neo4j browser (http://localhost:7474/), choose SSO for the login and log in with `admin/password` credentials
 
-![neo4j loging](images/sso-login-neo4j-browser.png)
-![neo4j loging](images/sso-login-keycloak.png)
+![neo4j login](images/sso-login-neo4j-browser.png)
+![keycloak login](images/sso-login-keycloak.png)
 
 Check you can access the `movies` and `admins` db.
 
