@@ -37,7 +37,7 @@
             "credentials": [
               {
                 "type": "password",
-                "value": "password"
+                "value": "hellopassword"
               }
             ],
             "clientRoles": {
@@ -53,7 +53,7 @@
             "credentials": [
               {
                 "type": "password",
-                "value": "password"
+                "value": "hellopassword"
               }
             ],
             "clientRoles": {

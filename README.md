@@ -8,16 +8,16 @@ This repository contains a fuly pre-configured setup with Docker :
 
 ### Neo4j
 
-- [Neo4j 5.26](https://neo4j.com) running on http://localhost:7474
+- [Neo4j 2025.x](https://neo4j.com) running on http://localhost:7474
 - Movies DB created with movies data
 - Admins DB created with one Admin node
-- Native authentication : `neo4j / password`
+- Native authentication : `neo4j / hellopassword`
 - Role `analyst` created with access to movies db, denied on `Person::born` property
 
 ### Keycloak
 
 - [Keycloak 26.x](https://www.keycloak.org/) (on Quarkus) running on https://keycloak:8443
-- Keycloak administrator credentials : `admin / admin123`
+- Keycloak administrator credentials : `admin / hellopassword`
 - Realm named `my-realm` created
 - A `public openid` client named `neo4j-sso` created with 2 client roles `admin` and `analyst`
 - Two users configured
@@ -132,7 +132,7 @@ docker compose up -d
 
 ### Login
 
-Go to the Neo4j browser (http://localhost:7474/), choose SSO for the login and log in with `admin/password` credentials
+Go to the Neo4j browser (http://localhost:7474/), choose SSO for the login and log in with `admin/hellopassword` credentials
 
 ![neo4j login](images/sso-login-neo4j-browser.png)
 ![keycloak login](images/sso-login-keycloak.png)
@@ -141,7 +141,7 @@ Check you can access the `movies` and `admins` db.
 
 Go to Keycloak and clear all sessions.
 
-Go back to the Neo4j browser, login again but this time with `analyst / password` credentials
+Go back to the Neo4j browser, login again but this time with `analyst / hellopassword` credentials
 
 You should see only the `movies` and `neo4j` databases, you also shouldn't see the `born` property on the `Person` nodes.
 

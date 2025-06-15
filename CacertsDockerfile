@@ -1,4 +1,4 @@
-FROM neo4j:5.26-enterprise
+FROM neo4j:2025.05.0-enterprise
 
 ARG CERTIFICATES_PATH=certificates
 
