@@ -22,6 +22,7 @@ services:
             - NEO4J_dbms_security_oidc_keycloak_claims_username=preferred_username
             - NEO4J_dbms_security_oidc_keycloak_claims_groups=roles
             - NEO4J_dbms_security_logs_oidc_jwt__claims__at__debug__level__enabled=true
+            - NEO4J_db_query_default__language=CYPHER_25
         volumes:
             - "./neo4j_data:/data"
             - "./certificates/cacerts:/opt/java/openjdk/lib/security/cacerts"
