@@ -38,7 +38,7 @@ services:
             keycloak:
                 condition: service_healthy
     neo4j-config-cli:
-        image: graphaware/neo4j-config-cli:2.7.2
+        image: graphaware/neo4j-config-cli:2.7.3
         environment:
             - NEO4J_USER=neo4j
             - NEO4J_PASSWORD=password
