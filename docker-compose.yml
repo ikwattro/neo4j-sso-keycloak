@@ -41,7 +41,7 @@ services:
         image: graphaware/neo4j-config-cli:2.7.3
         environment:
             - NEO4J_USER=neo4j
-            - NEO4J_PASSWORD=password
+            - NEO4J_PASSWORD=hellopassword
             - NEO4J_URI=bolt://neo4j:7687
             - IMPORT_PATH=/config
         volumes:
