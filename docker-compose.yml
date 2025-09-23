@@ -85,8 +85,6 @@ services:
         command: -p 5432
         expose:
             - "5432:5432" # Publishes 5433 to other containers but NOT to host machine
-        volumes:
-            - "./keycloak_data:/var/lib/postgresql/data"
         healthcheck:
             test: ["CMD-SHELL", "sh -c 'psql -U keycloak -d keycloak'"]
             interval: 5s
@@ -98,8 +96,8 @@ services:
         image: adorsys/keycloak-config-cli:latest-26
         environment:
             - KEYCLOAK_URL=https://${LOCAL_DEV_HOST}:8443
-            - KEYCLOAK_USER=admin
-            - KEYCLOAK_PASSWORD=admin123
+            - KEYCLOAK_USER=${KEYCLOAK_ADMIN_USER}
+            - KEYCLOAK_PASSWORD=${KEYCLOAK_ADMIN_PASSWORD}
             - KEYCLOAK_AVAILABILITYCHECK_ENABLED=true
             - KEYCLOAK_AVAILABILITYCHECK_TIMEOUT=60s
             - IMPORT_PATH=/config
